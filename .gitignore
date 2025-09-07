@@ -1,0 +1,6 @@
+# Ignorar directorios de entorno virtual
+.venv/
+venv/
+
+# Ignorar archivos de caché
+__pycache__/
