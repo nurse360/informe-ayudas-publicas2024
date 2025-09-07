@@ -1,19 +1,17 @@
 name: Publish Report
 
-# Este workflow se ejecuta cuando se hace un 'push' a la rama 'main'
 on:
   push:
     branches:
       - main
 
-# El trabajo se ejecuta en el entorno 'ubuntu-latest'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Permite al workflow escribir en el repositorio
-      pages: write    # Permite al workflow desplegar en GitHub Pages
-      id-token: write # Necesario para la autenticación
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -29,10 +27,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas jinja2 numpy plotly pathlib
           
-      - name: Remove data folder from gitignore
-        run: |
-          sed -i '/data\//d' .gitignore
-          
       - name: Generate the web report
         run: python generar_web.py
         
@@ -42,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'output/' # Sube el contenido de la carpeta 'output/'
+          path: 'output/'
 
       - name: Deploy to GitHub Pages
         id: deployment
