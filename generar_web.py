@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 import math
@@ -118,6 +121,17 @@ def eur_eu_py(v, dec=0, symbol=True):
         return v
 
 print("🟡 Inicio de la generación de la web")
+
+print("🟡 Preparando la carpeta de salida...")
+# Elimina la carpeta 'output' si ya existe para evitar errores y duplicados
+if os.path.exists("output"):
+    shutil.rmtree("output")
+# Crea una nueva carpeta 'output'
+os.makedirs("output")
+# Copia toda la carpeta 'static' dentro de la nueva carpeta 'output'
+shutil.copytree("static", "output/static")
+print("🟢 Carpeta 'static' copiada a 'output/static'")
+
 
 # === 1. Cargar datos ===
 csv_path = Path("data/empresas_grandes_beneficiarios_limpio2025.csv")
