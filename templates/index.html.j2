@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Informe de ayudas públicas a empresas (2024)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header>
+    <h1 style="color:#E76F51">Informe sobre ayudas públicas a empresas en España (2024)</h1>
+  </header>
+
+  <!-- Introducción -->
+  <section class="card">
+    <h2>Introducción</h2>
+    <p>
+      Este informe presenta un análisis descriptivo de las ayudas públicas concedidas a empresas en España durante el año 2024.
+      Los datos proceden del portal <a href="https://datos.gob.es" target="_blank" rel="noopener">datos.gob.es</a>,
+      en cumplimiento de la <strong>Ley 19/2013</strong> de transparencia, acceso a la información pública y buen gobierno.
+      El conjunto examina únicamente entidades clasificadas como <strong>empresas</strong> con una
+      <strong>ayuda equivalente acumulada igual o superior a 100.000&nbsp;€</strong>.
+    </p>
+    <p>
+      Variables principales: <strong>Ayuda equivalente acumulada total</strong> (importe total de ayudas por entidad) y
+      <strong>Ayuda equivalente del MRR</strong> (parte financiada con el Plan de Recuperación, Transformación y Resiliencia).
+      El objetivo de este informe es exclusivamente <strong>divulgativo</strong> y descriptivo.
+    </p>
+  </section>
+
+  <!-- KPIs -->
+  <h2>Indicadores principales</h2>
+
+  <div class="grid-2 kpi-grid">
+    <!-- Columna izquierda: KPIs apilados -->
+    <div class="kpi-column">
+      <div class="kpi">
+        <p class="titulo">Total de empresas beneficiarias</p>
+        <p class="valor">{{ n_beneficiarios | int_eu }}</p>
+      </div>
+
+      <div class="kpi">
+        <p class="titulo">Ayuda pública total concedida</p>
+        <p class="valor">{{ total_equivalente | eur_eu(0, True) }}</p>
+      </div>
+
+      <div class="kpi">
+        <p class="titulo">Ayuda correspondiente al MRR</p>
+        <p class="valor">{{ total_mrr | eur_eu(0, True) }}</p>
+      </div>
+    </div>
+
+    <!-- Columna derecha: gráfico tarta MRR vs No-MRR -->
+    <div class="iframe-wrap">
+      <iframe src="{{ grafico_mrr_vs_no }}" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <!-- Comentario breve sobre la distribución -->
+  <section class="card">
+    <h2>Distribución por tipo de entidad</h2>
+    <p>
+      Las subvenciones analizadas se reparten mayoritariamente entre <strong>Sociedades de Responsabilidad Limitada (S.L.)</strong> y
+      <strong>Sociedades Anónimas (S.A.)</strong>. Las S.L. concentran algo más de la mitad del total, mientras que las S.A. presentan
+      una <em>ayuda media por empresa</em> sensiblemente superior. La tabla resume el volumen total, el número de beneficiarios, la media por
+      entidad y el porcentaje sobre el total.
+    </p>
+  </section>
+
+  <!-- Tabla 1: Resumen por tipo de entidad -->
+  <section>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Tipo de Entidad</th>
+            <th>Número de Empresas</th>
+            <th>Total Ayuda (€)</th>
+            <th>Media por Empresa (€)</th>
+            <th>% del Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fila in resumen_tipo_entidad %}
+          <tr>
+            <td>{{ fila.TIPO_ENTIDAD }}</td>
+            <td>{{ fila.num_empresas|int_eu }}</td>
+            <td>{{ fila.total_ayuda|int_eu }}</td>
+            <td>{{ fila.media_empresa|int_eu }}</td>
+            <td>{{ fila["%_del_total"]|num_eu(2) }} %</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+  <!-- Párrafo explicativo breve (entre tabla y gráficos) -->
+  <section class="card">
+    <p>
+    La distribución de las ayudas muestra que la gran mayoría de las subvenciones se concentran 
+    en dos tipos de entidades: <strong>Sociedades de Responsabilidad Limitada (S.L.)</strong> y <strong>Sociedades 
+    Anónimas (S.A.)</strong>, que en conjunto acumulan más del<strong> 90 % </strong>del importe total concedido. Aunque las S.L. 
+    representan el grupo más numeroso y reciben más de la mitad del volumen global, <strong>la subvención 
+    media por empresa en las S.A. es aproximadamente tres veces mayor que en las S.L.</strong>.
+    </p>
+  </section>
+
+ <!-- Gráficos lado a lado -->
+<section>
+  <div class="grid-2">
+    <div class="iframe-wrap">
+      <iframe src="{{ grafico_tarta_tipo_entidad }}" loading="lazy"></iframe>
+    </div>
+
+    <div class="iframe-wrap">
+      <iframe src="{{ histograma_ayuda_media }}" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+  <!-- Top 10 empresas -->
+  <section>
+    <h2>Top 10 empresas por ayuda acumulada</h2>
+    <p>
+    Las 10 empresas que mayor subención total han recibido acumulan casi un <strong>13 % </strong> del total acumulado.
+    </p>
+
+  <div class="grid-2">
+    <div>
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>Total Ayuda (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fila in top10_empresas %}
+            <tr>
+              <td>{{ fila["Empresa"] }}</td>
+              <td>{{ fila["Total Ayuda (€)"] | int_eu }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="iframe-wrap">
+        <iframe class="graf" src="{{ histograma_top10 }}"></iframe>
+      </div>
+    </div>
+  </div>
+  </section>
+
+<section class="grid-2">
+  <!-- Columna izquierda: todo el texto -->
+ <div>
+  <h3>Curva de Lorenz e índice de Gini</h3>
+  
+  <p>
+    A primera vista, observando el <strong>Top&nbsp;10</strong> de beneficiarios podría parecer que las ayudas
+    están relativamente repartidas. Sin embargo, el análisis mediante la 
+    <strong>curva de Lorenz</strong> y el <strong>índice de Gini</strong> muestra lo contrario:
+    <strong>solo el {{ pct_empresas_50_resto|num_eu(1) }}&nbsp;%</strong> de las empresas —unas 
+    <strong>{{ n_empresas_50_minoria|int_eu }}</strong>— concentra <strong>la mitad</strong> de todo el importe subvencionado.
+  </p>
+
+  <p>
+    La <strong>curva de Lorenz</strong> es una herramienta para visualizar la distribución de un recurso.
+    En este caso, se ordenan las empresas de menor a mayor subvención recibida y se grafica la 
+    <em>proporción acumulada de empresas</em> (eje horizontal) frente a la 
+    <em>proporción acumulada de ayudas</em> (eje vertical). 
+    Si todas recibieran exactamente la misma cantidad, la curva seguiría la línea discontinua 
+    de <em>igualdad perfecta</em> que se muestra en el gráfico.
+    Cuanto más se aleja la curva real de esa diagonal, mayor es la concentración de las ayudas en pocos beneficiarios.
+  </p>
+
+  <p>
+    El <strong>índice de Gini</strong> resume esa desigualdad en un solo número entre <strong>0</strong> y <strong>1</strong>:
+    <strong>0</strong> indica reparto completamente equitativo y <strong>1</strong> concentración total en un único actor.
+    Se calcula como el área comprendida entre la línea de igualdad perfecta y la curva observada, 
+    multiplicada por dos. 
+    En nuestro caso, el valor obtenido refleja una concentración significativa, coherente con que 
+    una minoría absorba la mitad de los recursos.
+  </p>
+
+  <p>
+    La “otra mitad” de las ayudas se reparte entre el <strong>{{ pct_empresas_50|num_eu(1) }}&nbsp;%</strong> restante 
+    de beneficiarias —aproximadamente <strong>{{ n_empresas_50|int_eu }}</strong> empresas—, 
+    lo que evidencia que, aunque el número de entidades receptoras sea elevado, 
+    el peso económico está claramente dominado por unos pocos actores.
+  </p>
+</div>
+
+  <!-- Columna derecha: gráfico -->
+  <div class="iframe-wrap">
+    <iframe src="{{ curva_lorenz_gini }}" loading="lazy"></iframe>
+  </div>
+</section>
+<h2>Patrones sectoriales en el Top 10 de ayudas MRR y no MRR</h2>
+
+<p>
+  Este apartado compara exclusivamente las subvenciones recibidas por las 
+  <strong>10 empresas con mayores importes</strong> en cada categoría: 
+  fondos del <strong>Mecanismo de Recuperación y Resiliencia (MRR)</strong> y 
+  ayudas procedentes de otros programas o marcos normativos.
+</p>
+
+<p>
+  En el <strong>Top 10 de ayudas MRR</strong> destacan grandes compañías de sectores como 
+  <em>telecomunicaciones</em>, <em>automoción</em> y <em>energía</em>, con proyectos posiblemente alineados 
+  con las prioridades del Plan de Recuperación: digitalización, transición energética, 
+  innovación tecnológica o I+D avanzada.
+</p>
+
+<p>
+  Por su parte, el <strong>Top 10 de ayudas no MRR</strong> reúne principalmente 
+  entidades vinculadas a <em>servicios públicos locales</em>, <em>infraestructura e industria pesada</em> 
+  o <em>energía convencional</em>. En estos casos, la financiación puede procerer de líneas sectoriales, 
+  normativas específicas o fondos con objetivos más tradicionales.
+</p>
+
+<p>
+  Esta comparación permite identificar <strong>diferencias notables de perfil</strong> entre 
+  los principales beneficiarios de cada tipo de ayuda. No obstante, estas observaciones 
+  se limitan al ámbito del Top 10 y no pueden generalizarse al conjunto de empresas receptoras.
+</p>
+
+<p>
+  Además de los importes totales, resulta útil analizar la <strong>composición</strong> de la 
+  financiación en cada empresa —qué parte procede de fondos MRR y qué parte de otras ayudas— 
+  para entender mejor el papel que desempeña cada línea de financiación en sus actividades.
+</p>
+
+
+<section class="grid-2">
+  <div class="tabla-wrap">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th class="num">Ayuda MRR (€)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fila in top10_mrr_empresas %}
+        <tr>
+          <td>{{ fila["Empresa"] }}</td>
+          <td class="num">{{ fila["Ayuda MRR (€)"] | eur_eu(0, False) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="iframe-wrap">
+    <iframe src="{{ histograma_top10_mrr }}" loading="lazy"></iframe>
+  </div>
+</section>
+
+<section class="grid-2">
+  <div class="tabla-wrap">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th class="num">Ayuda no MRR (€)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fila in top10_no_mrr_empresas %}
+        <tr>
+          <td>{{ fila["Empresa"] }}</td>
+          <td class="num">{{ fila["Ayuda no MRR (€)"] | eur_eu(0, False) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="iframe-wrap">
+    <iframe src="{{ histograma_top10_no_mrr }}" loading="lazy"></iframe>
+  </div>
+</section>
+
+<section class="card">
+  <h2>En resumen:</h2>
+
+  <div class="grid-2">
+    <!-- Columna 1: resumen y lectura -->
+    <div>
+      <p>
+        El conjunto analizado incluye <strong>{{ n_beneficiarios|int_eu }}</strong> empresas que reciben un total de 
+        <strong>{{ total_equivalente|eur_eu(0, True) }}</strong>. De esa cifra, 
+        <strong>{{ total_mrr|eur_eu(0, True) }}</strong> proceden del MRR.
+      </p>
+
+      <p>
+        La distribución por forma jurídica está liderada por <strong>S.L.</strong> y <strong>S.A.</strong>, que concentran 
+        más del <strong>90&nbsp;%</strong> del importe. Aunque las S.L. son el grupo más numeroso y suman algo más de la mitad 
+        del total, la <em>ayuda media por empresa</em> es sustancialmente mayor en las S.A.
+      </p>
+
+      <p>
+        En términos de concentración, la <strong>curva de Lorenz</strong> y el <strong>índice de Gini</strong> evidencian que 
+        <strong>solo el {{ pct_empresas_50_resto|num_eu(1) }}&nbsp;%</strong> de las empresas 
+        (≈ <strong>{{ n_empresas_50_minoria|int_eu }}</strong>) concentra la mitad del importe subvencionado. 
+        El resto ({{ pct_empresas_50|num_eu(1) }}&nbsp;%) se reparte la otra mitad.
+      </p>
+
+      <p>
+        Diferenciar entre las <strong>ayudas del MRR</strong> y las de <strong>otros programas</strong> (analizando exclusivamente 
+        el Top 10 de cada grupo) revela que las mayores cantidades por empresa provienen del MRR, y que hay perfiles de 
+        beneficiarios muy distintos: las primeras se concentran en grandes compañías de sectores estratégicos, mientras que las 
+        segundas se orientan a entidades más ligadas a servicios públicos e infraestructura.
+      </p>
+    </div>
+
+    <!-- Columna 2: notas y limitaciones -->
+    <div>
+      <h3 style="margin-top:0;">Alcance y limitaciones del análisis</h3>
+      <ul>
+        <li>Fuentes: <em>datos.gob.es</em>. Cifras en euros (€).</li>
+        <li>Se incluyen únicamente entidades clasificadas como <strong>empresas</strong> con ayuda acumulada ≥ 100.000&nbsp;€.</li>
+        <li>Los importes MRR son los reportados como <em>Ayuda equivalente del MRR</em>; el resto se calcula como total menos MRR.</li>
+        <li>Las cifras dependen de la cobertura y actualización de la fuente.</li>
+        <li>El análisis es descriptivo; no evalúa causalidad ni eficacia de las ayudas.</li>
+        <li>La interpretación del Top 10 debe ser cautelosa, ya que algunas empresas o grupos empresariales pueden figurar bajo 
+        diferentes nombres de filiales o marcas en los datos, lo que podría afectar su posición real en la clasificación de ayudas totales.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+  <footer style="margin-top:2rem; font-size:.9rem; color:#666;">
+    <p>Fuente: datos.gob.es (Ministerio de Asuntos Económicos y Transformación Digital). Elaboración propia con finalidad divulgativa.</p>
+  </footer>
+
+</body>
+</html>
