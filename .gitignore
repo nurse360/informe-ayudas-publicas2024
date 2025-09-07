@@ -4,3 +4,6 @@ venv/
 
 # Ignorar archivos de caché
 __pycache__/
+
+# Ignorar base de datos
+data/
